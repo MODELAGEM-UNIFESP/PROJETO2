@@ -19,6 +19,7 @@ to setup
       [ set countdown grass-regrowth-time ]
       [ set countdown random grass-regrowth-time ] ;; initialize grass grow clocks randomly for brown patches
   ]
+  make-mountain
   set-default-shape sheep "sheep"
   create-sheep initial-number-sheep  ;; create the sheep, then initialize their variables
   [
@@ -26,7 +27,7 @@ to setup
     set size 1.5  ;; easier to see
     set label-color blue - 2
     set energy random (2 * sheep-gain-from-food)
-    setxy random-xcor random-ycor
+    posicionar
   ]
   set-default-shape vacas "cow"
   create-vacas initial-number-vacas  ;; create the sheep, then initialize their variables
@@ -35,27 +36,26 @@ to setup
     set size 1.5  ;; easier to see
     set label-color pink - 2
     set energy random (2 * vacas-gain-from-food)
-    setxy random-xcor random-ycor
+    posicionar
   ]
   set-default-shape wolves "wolf"
   create-wolves initial-number-wolves  ;; create the wolves, then initialize their variables
   [
     set color black
     set size 2  ;; easier to see
-    set energy random (2 * wolf-gain-from-food)
-    setxy random-xcor random-ycor
+    set energy random (2 * wolf-gain-from-sheep)
+    posicionar
   ]
   set-default-shape lions "lion"
   create-lions initial-number-lions  ;; create the wolves, then initialize their variables
   [
     set color blue
     set size 2  ;; easier to see
-    set energy random (2 * lion-gain-from-food)
-    setxy random-xcor random-ycor
+    set energy random (2 * lion-gain-from-sheep)
+    posicionar
   ]
   display-labels
   set grass count patches with [pcolor = green]
-  make-mountain
   reset-ticks
 end
 
@@ -65,6 +65,13 @@ to make-mountain
       if pycor < 4 and pycor > -4 [set pcolor black ]
     ]
   ]
+end
+
+to posicionar              ;; realoc any turtle put in black area
+  setxy random-xcor random-ycor
+     ifelse pcolor = black
+       [posicionar]
+       []
 end
 
 to go
@@ -109,7 +116,10 @@ to move  ;; turtle procedure
     rt random 50
     lt random 50
     fd 1
-    if pcolor = black [ bk 1 ]
+    if pcolor = black [
+      bk 1
+      move
+      ]
 end
 
 to sheep-eat-grass  ;; sheep procedure
@@ -159,28 +169,28 @@ to catch-sheep  ;; wolf procedure
   let prey one-of sheep-here                    ;; grab a random sheep
   if prey != nobody                             ;; did we get one?  if so,
     [ ask prey [ die ]                          ;; kill it
-      set energy energy + wolf-gain-from-food ] ;; get energy from eating
+      set energy energy + wolf-gain-from-sheep ] ;; get energy from eating
 end
 
 to catch-vacas  ;; wolf procedure
   let prey one-of vacas-here                    ;; grab a random sheep
   if prey != nobody                             ;; did we get one?  if so,
     [ ask prey [ die ]                          ;; kill it
-      set energy energy + wolf-gain-from-food ] ;; get energy from eating
+      set energy energy + wolf-gain-from-cow ] ;; get energy from eating
 end
 
 to l-catch-sheep  ;; wolf procedure
   let prey one-of sheep-here                    ;; grab a random sheep
   if prey != nobody                             ;; did we get one?  if so,
     [ ask prey [ die ]                          ;; kill it
-      set energy energy + lion-gain-from-food ] ;; get energy from eating
+      set energy energy + lion-gain-from-sheep ] ;; get energy from eating
 end
 
 to l-catch-vacas  ;; wolf procedure
   let prey one-of vacas-here                    ;; grab a random sheep
   if prey != nobody                             ;; did we get one?  if so,
     [ ask prey [ die ]                          ;; kill it
-      set energy energy + lion-gain-from-food ] ;; get energy from eating
+      set energy energy + lion-gain-from-cow ] ;; get energy from eating
 end
 
 
@@ -241,85 +251,85 @@ ticks
 60.0
 
 SLIDER
-3
-150
-177
-183
+6
+122
+180
+155
 initial-number-sheep
 initial-number-sheep
 0
 250
-58
+132
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-3
-187
-177
-220
+6
+159
+180
+192
 sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-11
+14
 1.0
 1
 NIL
 HORIZONTAL
 
 SLIDER
-3
-222
-177
-255
+6
+194
+180
+227
 sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-4
+5
 1.0
 1
 %
 HORIZONTAL
 
 SLIDER
-359
-150
-524
-183
+362
+122
+527
+155
 initial-number-wolves
 initial-number-wolves
 0
 250
-40
+30
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-359
-186
-524
-219
-wolf-gain-from-food
-wolf-gain-from-food
+362
+158
+527
+191
+wolf-gain-from-sheep
+wolf-gain-from-sheep
 0.0
 100.0
-20
+7
 1.0
 1
 NIL
 HORIZONTAL
 
 SLIDER
-359
-222
-524
-255
+363
+232
+528
+265
 wolf-reproduce
 wolf-reproduce
 0.0
@@ -331,25 +341,25 @@ wolf-reproduce
 HORIZONTAL
 
 SLIDER
-8
-89
-220
-122
+5
+68
+217
+101
 grass-regrowth-time
 grass-regrowth-time
 0
 100
-0
+49
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-8
-28
-77
-61
+6
+10
+75
+43
 setup
 setup
 NIL
@@ -363,10 +373,10 @@ NIL
 1
 
 BUTTON
-90
-28
-157
-61
+88
+10
+155
+43
 go
 go
 T
@@ -380,10 +390,10 @@ NIL
 0
 
 PLOT
-52
-317
-621
-541
+3
+326
+572
+550
 populations
 time
 pop.
@@ -402,10 +412,10 @@ PENS
 "lions" 1.0 0 -955883 true "" "plot count lions"
 
 MONITOR
-376
-265
-447
-310
+164
+275
+235
+320
 sheep
 count sheep
 3
@@ -413,10 +423,10 @@ count sheep
 11
 
 MONITOR
-125
-265
-207
-310
+241
+275
+323
+320
 wolves
 count wolves
 3
@@ -424,10 +434,10 @@ count wolves
 11
 
 MONITOR
-44
-265
-120
-310
+3
+275
+79
+320
 NIL
 grass / 4
 0
@@ -435,40 +445,40 @@ grass / 4
 11
 
 TEXTBOX
-8
-130
-148
-149
+11
+102
+151
+121
 Sheep settings
 11
 0.0
 0
 
 TEXTBOX
-364
-130
-477
-148
+367
+102
+480
+120
 Wolf settings
 11
 0.0
 0
 
 TEXTBOX
-9
-68
-161
-86
+11
+46
+83
+64
 Grass settings
 11
 0.0
 0
 
 SWITCH
-167
-28
-303
-61
+165
+10
+301
+43
 show-energy?
 show-energy?
 1
@@ -476,55 +486,55 @@ show-energy?
 -1000
 
 SLIDER
-182
-150
-354
-183
+185
+122
+357
+155
 initial-number-vacas
 initial-number-vacas
 0
 250
-45
+137
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-182
-186
-354
-219
+185
+158
+357
+191
 vacas-gain-from-food
 vacas-gain-from-food
 0
 100
-17
+16
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-183
-222
-355
-255
+186
+194
+358
+227
 vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-4
+5
 1.0
 1
 %
 HORIZONTAL
 
 MONITOR
-295
-265
-369
-310
+83
+275
+157
+320
 vacas
 count vacas
 17
@@ -532,10 +542,10 @@ count vacas
 11
 
 MONITOR
-211
-265
-289
-310
+327
+275
+405
+320
 lions
 count lions
 17
@@ -543,60 +553,90 @@ count lions
 11
 
 SLIDER
-534
-150
-706
-183
+537
+122
+709
+155
 initial-number-lions
 initial-number-lions
 0
 300
-40
+27
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-533
-186
-705
-219
-lion-gain-from-food
-lion-gain-from-food
+536
+158
+708
+191
+lion-gain-from-sheep
+lion-gain-from-sheep
 0
 100
-22
+16
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-533
-222
-705
-255
+537
+232
+709
+265
 lion-reproduce
 lion-reproduce
 1.0
 20.0
-4
+5
 1.0
 1
 %
 HORIZONTAL
 
 SLIDER
-228
-89
-611
-122
+225
+68
+608
+101
 initial-number-grass
 initial-number-grass
 0
 2000
 1054
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+363
+195
+528
+228
+wolf-gain-from-cow
+wolf-gain-from-cow
+0
+100
+16
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+536
+195
+708
+228
+lion-gain-from-cow
+lion-gain-from-cow
+0
+100
+10
 1
 1
 NIL
