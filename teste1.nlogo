@@ -27,7 +27,7 @@ to setup
     set size 1.5  ;; easier to see
     set label-color blue - 2
     set energy random (2 * sheep-gain-from-food)
-    posicionar
+    posicionar   ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
   ]
   set-default-shape vacas "cow"
   create-vacas initial-number-vacas  ;; create the sheep, then initialize their variables
@@ -36,27 +36,27 @@ to setup
     set size 1.5  ;; easier to see
     set label-color pink - 2
     set energy random (2 * vacas-gain-from-food)
-    posicionar
+    posicionar         ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
   ]
   set-default-shape wolves "wolf"
   create-wolves initial-number-wolves  ;; create the wolves, then initialize their variables
   [
     set color black
     set size 2  ;; easier to see
-    ifelse wolf-gain-from-sheep > 0
+    ifelse wolf-gain-from-sheep > 0     ;; caso nao haja energia vindo dos sheep
         [set energy random (2 * wolf-gain-from-sheep)]
-        [set energy random (2 * wolf-gain-from-cow)]
-    posicionar
+        [set energy random (2 * wolf-gain-from-cow)]        ;; os lobos serao inicializados com a energia vindo das vacas
+    posicionar   ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
   ]
   set-default-shape lions "lion"
   create-lions initial-number-lions  ;; create the wolves, then initialize their variables
   [
     set color blue
     set size 2  ;; easier to see
-    ifelse lion-gain-from-sheep > 0
-        [set energy random (2 * lion-gain-from-sheep)]
-        [set energy random (2 * lion-gain-from-cow)]
-    posicionar
+    ifelse lion-gain-from-sheep > 0  ;; Caso nao haja ganho vindo dos sheep,
+      [set energy random (2 * lion-gain-from-sheep)]     ;;
+      [set energy random (2 * lion-gain-from-cow)]       ;; os leos serao inicializados usando o ganho vindo das vacas
+    posicionar   ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
   ]
   display-labels
   set grass count patches with [pcolor = green]
@@ -72,9 +72,9 @@ to make-mountain
 end
 
 to posicionar              ;; realoc any turtle put in black area
-  setxy random-xcor random-ycor
-     ifelse pcolor = black
-       [posicionar]
+  setxy random-xcor random-ycor   ;; coloca o turtle em qualquer area
+  ifelse pcolor = black           ;; se for colocado na area preta
+    [posicionar]                  ;; posiciona novamente até nao colocar na area preta
        []
 end
 
@@ -117,12 +117,12 @@ to go
 end
 
 to move  ;; turtle procedure
-    rt random 50
-    lt random 50
+  rt random 50                  ;; movimenta os turtles
+  lt random 50
     fd 1
-    if pcolor = black [
-      bk 1
-      move
+    if pcolor = black [         ;; se o turtle 'pisa' na area preta
+      bk 1                      ;; da uma passo para traz
+      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
       ]
 end
 
@@ -278,7 +278,7 @@ sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-20
+13
 1.0
 1
 NIL
@@ -293,7 +293,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-3
+2
 1.0
 1
 %
@@ -323,7 +323,7 @@ wolf-gain-from-sheep
 wolf-gain-from-sheep
 0.0
 100.0
-7
+10
 1.0
 1
 NIL
@@ -338,7 +338,7 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-7
+4
 1.0
 1
 %
@@ -353,7 +353,7 @@ grass-regrowth-time
 grass-regrowth-time
 0
 100
-34
+23
 1
 1
 NIL
@@ -513,7 +513,7 @@ vacas-gain-from-food
 vacas-gain-from-food
 0
 100
-19
+17
 1
 1
 NIL
@@ -528,7 +528,7 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-3
+2
 1.0
 1
 %
@@ -595,7 +595,7 @@ lion-reproduce
 lion-reproduce
 1.0
 20.0
-7
+4
 1.0
 1
 %
@@ -625,7 +625,7 @@ wolf-gain-from-cow
 wolf-gain-from-cow
 0
 100
-21
+14
 1
 1
 NIL
@@ -640,7 +640,7 @@ lion-gain-from-cow
 lion-gain-from-cow
 0
 100
-13
+12
 1
 1
 NIL
