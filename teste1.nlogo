@@ -43,7 +43,9 @@ to setup
   [
     set color black
     set size 2  ;; easier to see
-    set energy random (2 * wolf-gain-from-sheep)
+    ifelse wolf-gain-from-sheep > 0
+        [set energy random (2 * wolf-gain-from-sheep)]
+        [set energy random (2 * wolf-gain-from-cow)]
     posicionar
   ]
   set-default-shape lions "lion"
@@ -51,7 +53,9 @@ to setup
   [
     set color blue
     set size 2  ;; easier to see
-    set energy random (2 * lion-gain-from-sheep)
+    ifelse lion-gain-from-sheep > 0
+        [set energy random (2 * lion-gain-from-sheep)]
+        [set energy random (2 * lion-gain-from-cow)]
     posicionar
   ]
   display-labels
@@ -259,7 +263,7 @@ initial-number-sheep
 initial-number-sheep
 0
 250
-132
+129
 1
 1
 NIL
@@ -274,7 +278,7 @@ sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-14
+20
 1.0
 1
 NIL
@@ -289,7 +293,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-5
+3
 1.0
 1
 %
@@ -304,7 +308,7 @@ initial-number-wolves
 initial-number-wolves
 0
 250
-30
+60
 1
 1
 NIL
@@ -334,7 +338,7 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-4
+7
 1.0
 1
 %
@@ -349,7 +353,7 @@ grass-regrowth-time
 grass-regrowth-time
 0
 100
-49
+34
 1
 1
 NIL
@@ -494,7 +498,7 @@ initial-number-vacas
 initial-number-vacas
 0
 250
-137
+118
 1
 1
 NIL
@@ -509,7 +513,7 @@ vacas-gain-from-food
 vacas-gain-from-food
 0
 100
-16
+19
 1
 1
 NIL
@@ -524,7 +528,7 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-5
+3
 1.0
 1
 %
@@ -561,7 +565,7 @@ initial-number-lions
 initial-number-lions
 0
 300
-27
+62
 1
 1
 NIL
@@ -576,7 +580,7 @@ lion-gain-from-sheep
 lion-gain-from-sheep
 0
 100
-16
+12
 1
 1
 NIL
@@ -591,7 +595,7 @@ lion-reproduce
 lion-reproduce
 1.0
 20.0
-5
+7
 1.0
 1
 %
@@ -621,7 +625,7 @@ wolf-gain-from-cow
 wolf-gain-from-cow
 0
 100
-16
+21
 1
 1
 NIL
@@ -636,7 +640,7 @@ lion-gain-from-cow
 lion-gain-from-cow
 0
 100
-10
+13
 1
 1
 NIL
