@@ -1,7 +1,7 @@
 ;; PARA VALORES INICIAIS
 ;; 
 
-globals [grass sheep-death]  ;; keep track of how much grass there is
+globals [grass sheep-death vacas-death wolves-death lions-death]  ;; keep track of how much grass there is
 ;; Sheep and wolves are both breeds of turtle.
 breed [sheep a-sheep]  ;; sheep is its own plural, so we use "a-sheep" as the singular.
 breed [vacas vaca]
@@ -13,9 +13,9 @@ patches-own [countdown]
 
 to setup
   clear-all
-  set sheep-death 50
   set vacas-death 0
-  set wolves-death 20
+  set sheep-death 0
+  set wolves-death 3.5
   set lions-death 0
   
   ask patches [ set pcolor green ]
@@ -29,15 +29,6 @@ to setup
       [ set countdown random grass-regrowth-time ] ;; initialize grass grow clocks randomly for brown patches
   ]
   make-mountain
-  set-default-shape sheep "sheep"
-  create-sheep initial-number-sheep  ;; create the sheep, then initialize their variables
-  [
-    set color white
-    set size 1.5  ;; easier to see
-    set label-color blue - 2
-    set energy random (2 * sheep-gain-from-food)
-    posicionar   ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
-  ]
   set-default-shape vacas "cow"
   create-vacas initial-number-vacas  ;; create the sheep, then initialize their variables
   [
@@ -46,6 +37,15 @@ to setup
     set label-color pink - 2
     set energy random (2 * vacas-gain-from-food)
     posicionar         ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
+  ]
+  set-default-shape sheep "sheep"
+  create-sheep initial-number-sheep  ;; create the sheep, then initialize their variables
+  [
+    set color white
+    set size 1.5  ;; easier to see
+    set label-color blue - 2
+    set energy random (2 * sheep-gain-from-food)
+    posicionar   ;; posicionar todos os turtles fora da area preta, vide 'to posicionar'
   ]
   set-default-shape wolves "wolf"
   create-wolves initial-number-wolves  ;; create the wolves, then initialize their variables
@@ -89,19 +89,19 @@ end
 
 to go
   if not any? turtles [ stop ]
-  ask sheep [
-    move
-    sheep-lose-energy;;set energy energy - 1  ;; deduct energy for sheep
-    sheep-eat-grass
-    do-sheep-death
-    reproduce-sheep
-  ]
   ask vacas [
     move
     vacas-lose-energy ;;set energy energy - 1  ;; deduct energy for vaca
     vacas-eat-grass
     do-vacas-death
     reproduce-vacas
+  ]
+  ask sheep [
+    move
+    sheep-lose-energy;;set energy energy - 1  ;; deduct energy for sheep
+    sheep-eat-grass
+    do-sheep-death
+    reproduce-sheep
   ]
   ask wolves [
     move
@@ -114,8 +114,8 @@ to go
   ask lions [
     move
     lions-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
-    l-catch-sheep
     l-catch-vacas
+    l-catch-sheep
     do-lions-death
     reproduce-lions
   ]
@@ -135,13 +135,13 @@ to move  ;; turtle procedure
       ]
 end
 
-to sheep-lose-energy
-  if random-float 100 < sheep-tmorte
+to vacas-lose-energy
+  if random-float 100 < vacas-tmorte
      [set energy energy - 1]
 end
 
-to vacas-lose-energy
-  if random-float 100 < vacas-tmorte
+to sheep-lose-energy
+  if random-float 100 < sheep-tmorte
      [set energy energy - 1]
 end
 
@@ -155,6 +155,15 @@ to lions-lose-energy
      [set energy energy - 1]
 end
 
+to vacas-eat-grass  ;; sheep procedure
+  ;; sheep eat grass, turn the patch brown
+  if pcolor = green [
+    if random-float 100 < 5 
+      [set pcolor brown]
+    set energy energy + vacas-gain-from-food  ;; sheep gain energy by eating
+  ]
+end
+
 to sheep-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
@@ -164,24 +173,15 @@ to sheep-eat-grass  ;; sheep procedure
   ]
 end
 
-to vacas-eat-grass  ;; sheep procedure
-  ;; sheep eat grass, turn the patch brown
-  if pcolor = green [
-    if random-float 100 < 50 
-      [set pcolor brown]
-    set energy energy + vacas-gain-from-food  ;; sheep gain energy by eating
-  ]
-end
-
-to reproduce-sheep  ;; sheep procedure
-  if random-float 100 < sheep-reproduce [  ;; throw "dice" to see if you will reproduce
+to reproduce-vacas  ;; sheep procedure
+  if random-float 100 < vacas-reproduce [  ;; throw "dice" to see if you will reproduce
     set energy (energy / 2)                ;; divide energy between parent and offspring
     hatch 1 [ rt random-float 360 fd 1 ]   ;; hatch an offspring and move it forward 1 step
   ]
 end
 
-to reproduce-vacas  ;; sheep procedure
-  if random-float 100 < vacas-reproduce [  ;; throw "dice" to see if you will reproduce
+to reproduce-sheep  ;; sheep procedure
+  if random-float 100 < sheep-reproduce [  ;; throw "dice" to see if you will reproduce
     set energy (energy / 2)                ;; divide energy between parent and offspring
     hatch 1 [ rt random-float 360 fd 1 ]   ;; hatch an offspring and move it forward 1 step
   ]
@@ -200,13 +200,6 @@ to reproduce-lions  ;; wolf procedure
   ]
 end
 
-to catch-sheep  ;; wolf procedure
-  let prey one-of sheep-here                    ;; grab a random sheep
-  if prey != nobody                             ;; did we get one?  if so,
-    [ ask prey [ die ]                          ;; kill it
-      set energy energy + wolf-gain-from-sheep ] ;; get energy from eating
-end
-
 to catch-vacas  ;; wolf procedure
   let prey one-of vacas-here                    ;; grab a random sheep
   if prey != nobody                             ;; did we get one?  if so,
@@ -214,11 +207,11 @@ to catch-vacas  ;; wolf procedure
       set energy energy + wolf-gain-from-cow ] ;; get energy from eating
 end
 
-to l-catch-sheep  ;; wolf procedure
+to catch-sheep  ;; wolf procedure
   let prey one-of sheep-here                    ;; grab a random sheep
   if prey != nobody                             ;; did we get one?  if so,
     [ ask prey [ die ]                          ;; kill it
-      set energy energy + lion-gain-from-sheep ] ;; get energy from eating
+      set energy energy + wolf-gain-from-sheep ] ;; get energy from eating
 end
 
 to l-catch-vacas  ;; wolf procedure
@@ -228,26 +221,35 @@ to l-catch-vacas  ;; wolf procedure
       set energy energy + lion-gain-from-cow ] ;; get energy from eating
 end
 
-
-to do-sheep-death  ;; turtle procedure
-  ;; when energy dips below zero, die
-  if (energy < 0) or (random 100 < sheep-death)
-     [ die ] 
+to l-catch-sheep  ;; wolf procedure
+  let prey one-of sheep-here                    ;; grab a random sheep
+  if prey != nobody                             ;; did we get one?  if so,
+    [ ask prey [ die ]                          ;; kill it
+      set energy energy + lion-gain-from-sheep ] ;; get energy from eating
 end
 
 to do-vacas-death  ;; turtle procedure
   ;; when energy dips below zero, die
-  if energy < 0 [ die ]
+  if (energy < 0) or (random 100 < vacas-death)
+    [ die ]
+end
+
+to do-sheep-death  ;; turtle procedure
+  ;; when energy dips below zero, die
+  if (energy < 0) or (random 100 < sheep-death)
+    [ die ] 
 end
 
 to do-wolves-death  ;; turtle procedure
   ;; when energy dips below zero, die
-  if energy < 0 [ die ]
+  if (energy < 0) or (random 100 < wolves-death)
+    [ die ]
 end
 
 to do-lions-death  ;; turtle procedure
   ;; when energy dips below zero, die
-  if energy < 0 [ die ]
+  if (energy < 0) or (random 100 < lions-death)
+    [ die ]
 end
 
 to grow-grass  ;; patch procedure
@@ -275,13 +277,13 @@ end
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-792
-25
-1243
-497
-24
-24
-9.0
+728
+10
+1567
+574
+50
+32
+8.2245
 1
 14
 1
@@ -291,10 +293,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--24
-24
--24
-24
+-50
+50
+-32
+32
 1
 1
 1
@@ -310,7 +312,7 @@ initial-number-sheep
 initial-number-sheep
 0
 250
-159
+121
 1
 1
 NIL
@@ -325,7 +327,7 @@ sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-12
+7
 1.0
 1
 NIL
@@ -340,7 +342,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-5
+3
 1.0
 1
 %
@@ -355,7 +357,7 @@ initial-number-wolves
 initial-number-wolves
 0
 250
-20
+40
 1
 1
 NIL
@@ -370,7 +372,7 @@ wolf-gain-from-sheep
 wolf-gain-from-sheep
 0.0
 20
-3.5
+8
 0.25
 1
 NIL
@@ -385,8 +387,8 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-2
-1.0
+4.5
+0.25
 1
 %
 HORIZONTAL
@@ -400,7 +402,7 @@ grass-regrowth-time
 grass-regrowth-time
 0
 100
-10
+74
 1
 1
 NIL
@@ -545,7 +547,7 @@ initial-number-vacas
 initial-number-vacas
 0
 250
-143
+91
 1
 1
 NIL
@@ -560,7 +562,7 @@ vacas-gain-from-food
 vacas-gain-from-food
 0
 100
-15
+6
 1
 1
 NIL
@@ -575,7 +577,7 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-4
+3
 1.0
 1
 %
@@ -672,7 +674,7 @@ wolf-gain-from-cow
 wolf-gain-from-cow
 0
 20
-3
+8
 0.25
 1
 NIL
@@ -702,7 +704,7 @@ sheep-tmorte
 sheep-tmorte
 0
 100
-60
+67
 1
 1
 %
@@ -717,7 +719,7 @@ vacas-tmorte
 vacas-tmorte
 0
 100
-44
+58
 1
 1
 NIL
@@ -732,7 +734,7 @@ wolves-tmorte
 wolves-tmorte
 0
 100
-93
+13
 1
 1
 NIL
