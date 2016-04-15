@@ -1,4 +1,7 @@
-globals [grass]  ;; keep track of how much grass there is
+;; PARA VALORES INICIAIS
+;; 
+
+globals [grass sheep-death]  ;; keep track of how much grass there is
 ;; Sheep and wolves are both breeds of turtle.
 breed [sheep a-sheep]  ;; sheep is its own plural, so we use "a-sheep" as the singular.
 breed [vacas vaca]
@@ -7,8 +10,14 @@ breed [lions lion]
 turtles-own [energy]       ;; both wolves and sheep have energy
 patches-own [countdown]
 
+
 to setup
   clear-all
+  set sheep-death 50
+  set vacas-death 0
+  set wolves-death 20
+  set lions-death 0
+  
   ask patches [ set pcolor green ]
   ;; check GRASS? switch.
   ;; if it is true, then grass grows and the sheep eat it
@@ -82,32 +91,32 @@ to go
   if not any? turtles [ stop ]
   ask sheep [
     move
-    set energy energy - 1  ;; deduct energy for sheep
+    sheep-lose-energy;;set energy energy - 1  ;; deduct energy for sheep
     sheep-eat-grass
-    death
+    do-sheep-death
     reproduce-sheep
   ]
   ask vacas [
     move
-    set energy energy - 1  ;; deduct energy for vaca
+    vacas-lose-energy ;;set energy energy - 1  ;; deduct energy for vaca
     vacas-eat-grass
-    death
+    do-vacas-death
     reproduce-vacas
   ]
   ask wolves [
     move
-    set energy energy - 1  ;; wolves lose energy as they move
+    wolves-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
     catch-sheep
     catch-vacas
-    death
+    do-wolves-death
     reproduce-wolves
   ]
   ask lions [
     move
-    set energy energy - 1  ;; wolves lose energy as they move
+    lions-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
     l-catch-sheep
     l-catch-vacas
-    death
+    do-lions-death
     reproduce-lions
   ]
   ask patches [ grow-grass ]
@@ -126,10 +135,31 @@ to move  ;; turtle procedure
       ]
 end
 
+to sheep-lose-energy
+  if random-float 100 < sheep-tmorte
+     [set energy energy - 1]
+end
+
+to vacas-lose-energy
+  if random-float 100 < vacas-tmorte
+     [set energy energy - 1]
+end
+
+to wolves-lose-energy
+  if random-float 100 < wolves-tmorte
+     [set energy energy - 1]
+end
+
+to lions-lose-energy
+  if random-float 100 < lions-tmorte
+     [set energy energy - 1]
+end
+
 to sheep-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
-    set pcolor brown
+    if random-float 100 < 50 
+      [set pcolor brown]
     set energy energy + sheep-gain-from-food  ;; sheep gain energy by eating
   ]
 end
@@ -137,7 +167,8 @@ end
 to vacas-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
-    set pcolor brown
+    if random-float 100 < 50 
+      [set pcolor brown]
     set energy energy + vacas-gain-from-food  ;; sheep gain energy by eating
   ]
 end
@@ -198,7 +229,23 @@ to l-catch-vacas  ;; wolf procedure
 end
 
 
-to death  ;; turtle procedure
+to do-sheep-death  ;; turtle procedure
+  ;; when energy dips below zero, die
+  if (energy < 0) or (random 100 < sheep-death)
+     [ die ] 
+end
+
+to do-vacas-death  ;; turtle procedure
+  ;; when energy dips below zero, die
+  if energy < 0 [ die ]
+end
+
+to do-wolves-death  ;; turtle procedure
+  ;; when energy dips below zero, die
+  if energy < 0 [ die ]
+end
+
+to do-lions-death  ;; turtle procedure
   ;; when energy dips below zero, die
   if energy < 0 [ die ]
 end
@@ -263,7 +310,7 @@ initial-number-sheep
 initial-number-sheep
 0
 250
-129
+159
 1
 1
 NIL
@@ -278,7 +325,7 @@ sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-13
+12
 1.0
 1
 NIL
@@ -293,7 +340,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-2
+5
 1.0
 1
 %
@@ -308,7 +355,7 @@ initial-number-wolves
 initial-number-wolves
 0
 250
-60
+20
 1
 1
 NIL
@@ -322,9 +369,9 @@ SLIDER
 wolf-gain-from-sheep
 wolf-gain-from-sheep
 0.0
-100.0
-10
-1.0
+20
+3.5
+0.25
 1
 NIL
 HORIZONTAL
@@ -338,7 +385,7 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-4
+2
 1.0
 1
 %
@@ -353,7 +400,7 @@ grass-regrowth-time
 grass-regrowth-time
 0
 100
-23
+10
 1
 1
 NIL
@@ -394,10 +441,10 @@ NIL
 0
 
 PLOT
-3
-326
-572
-550
+5
+378
+574
+602
 populations
 time
 pop.
@@ -416,10 +463,10 @@ PENS
 "lions" 1.0 0 -955883 true "" "plot count lions"
 
 MONITOR
-164
-275
-235
-320
+166
+327
+237
+372
 sheep
 count sheep
 3
@@ -427,10 +474,10 @@ count sheep
 11
 
 MONITOR
-241
-275
-323
-320
+243
+327
+325
+372
 wolves
 count wolves
 3
@@ -438,10 +485,10 @@ count wolves
 11
 
 MONITOR
-3
-275
-79
-320
+5
+327
+81
+372
 NIL
 grass / 4
 0
@@ -498,7 +545,7 @@ initial-number-vacas
 initial-number-vacas
 0
 250
-118
+143
 1
 1
 NIL
@@ -513,7 +560,7 @@ vacas-gain-from-food
 vacas-gain-from-food
 0
 100
-17
+15
 1
 1
 NIL
@@ -528,17 +575,17 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-2
+4
 1.0
 1
 %
 HORIZONTAL
 
 MONITOR
-83
-275
-157
-320
+85
+327
+159
+372
 vacas
 count vacas
 17
@@ -546,10 +593,10 @@ count vacas
 11
 
 MONITOR
+329
 327
-275
-405
-320
+407
+372
 lions
 count lions
 17
@@ -565,7 +612,7 @@ initial-number-lions
 initial-number-lions
 0
 300
-62
+0
 1
 1
 NIL
@@ -624,9 +671,9 @@ SLIDER
 wolf-gain-from-cow
 wolf-gain-from-cow
 0
-100
-14
-1
+20
+3
+0.25
 1
 NIL
 HORIZONTAL
@@ -641,6 +688,66 @@ lion-gain-from-cow
 0
 100
 12
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+6
+231
+178
+264
+sheep-tmorte
+sheep-tmorte
+0
+100
+60
+1
+1
+%
+HORIZONTAL
+
+SLIDER
+187
+233
+359
+266
+vacas-tmorte
+vacas-tmorte
+0
+100
+44
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+363
+268
+529
+301
+wolves-tmorte
+wolves-tmorte
+0
+100
+93
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+538
+271
+710
+304
+lions-tmorte
+lions-tmorte
+0
+100
+50
 1
 1
 NIL
@@ -1074,7 +1181,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.3.1
+NetLogo 5.1.0
 @#$#@#$#@
 set grass? true
 setup
