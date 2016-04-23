@@ -1,5 +1,5 @@
 ;; PARA VALORES INICIAIS
-;; 
+;;
 
 globals [grass sheep-death vacas-death wolves-death lions-death]  ;; keep track of how much grass there is
 ;; Sheep and wolves are both breeds of turtle.
@@ -17,7 +17,7 @@ to setup
   set sheep-death 0
   set wolves-death 3.5
   set lions-death 0
-  
+
   ask patches [ set pcolor green ]
   ;; check GRASS? switch.
   ;; if it is true, then grass grows and the sheep eat it
@@ -74,7 +74,7 @@ end
 
 to make-mountain
   ask patches [
-    if pxcor > -25 and pxcor < -5 [
+    if pxcor > -100 and pxcor < 0 or pxcor > 0 and pxcor < 100 [
       if pycor < 4 and pycor > -4 [set pcolor black ]
     ]
   ]
@@ -82,7 +82,7 @@ end
 
 to posicionar              ;; realoc any turtle put in black area
   setxy random-xcor random-ycor   ;; coloca o turtle em qualquer area
-  ifelse pcolor = black           ;; se for colocado na area preta
+  ifelse pcolor = black          ;; se for colocado na area preta
     [posicionar]                  ;; posiciona novamente até nao colocar na area preta
        []
 end
@@ -90,7 +90,7 @@ end
 to go
   if not any? turtles [ stop ]
   ask vacas [
-    move
+    vacas-move
     vacas-lose-energy ;;set energy energy - 1  ;; deduct energy for vaca
     vacas-eat-grass
     do-vacas-death
@@ -104,7 +104,7 @@ to go
     reproduce-sheep
   ]
   ask wolves [
-    move
+    wolves-move
     wolves-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
     catch-sheep
     catch-vacas
@@ -125,8 +125,57 @@ to go
   display-labels
 end
 
+to vacas-move
+  ifelse any? patches [
+
+      face min-one-of patches with [pcolor = green]  [ distance myself ]
+
+  ]
+  [
+    rt random 50                ;; movimenta os turtles
+    lt random 50
+  ]
+
+
+    forward 1
+
+    if pcolor = black [         ;; se o turtle 'pisa' na area preta
+      bk 1                      ;; da uma passo para traz
+      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
+      ]
+end
+
+to vacas-move2
+  ifelse any? vacas [
+      face min-one-of other vacas  [ distance myself ]
+      rt 180
+
+  ]
+  [
+    rt random 50                ;; movimenta os turtles
+    lt random 50
+  ]
+
+
+    forward 1
+
+    if pcolor = black [         ;; se o turtle 'pisa' na area preta
+      bk 1                      ;; da uma passo para traz
+      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
+      ]
+end
+
+to wolves-move
+  face min-one-of vacas  [ distance myself ]
+    forward 1
+    if pcolor = black [         ;; se o turtle 'pisa' na area preta
+      bk 1                      ;; da uma passo para traz
+      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
+      ]
+end
+
 to move  ;; turtle procedure
-  rt random 50                  ;; movimenta os turtles
+  rt random 50                ;; movimenta os turtles
   lt random 50
     fd 1
     if pcolor = black [         ;; se o turtle 'pisa' na area preta
@@ -158,8 +207,9 @@ end
 to vacas-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
-    if random-float 100 < 5 
-      [set pcolor brown]
+    ;;if random-float 100 < 5
+      ;;[set pcolor brown]
+      set pcolor brown
     set energy energy + vacas-gain-from-food  ;; sheep gain energy by eating
   ]
 end
@@ -167,7 +217,7 @@ end
 to sheep-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
-    if random-float 100 < 50 
+    if random-float 100 < 50
       [set pcolor brown]
     set energy energy + sheep-gain-from-food  ;; sheep gain energy by eating
   ]
@@ -237,7 +287,7 @@ end
 to do-sheep-death  ;; turtle procedure
   ;; when energy dips below zero, die
   if (energy < 0) or (random 100 < sheep-death)
-    [ die ] 
+    [ die ]
 end
 
 to do-wolves-death  ;; turtle procedure
@@ -277,10 +327,10 @@ end
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-728
+1404
 10
-1567
-574
+2244
+575
 50
 32
 8.2245
@@ -290,8 +340,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -50
 50
@@ -312,7 +362,7 @@ initial-number-sheep
 initial-number-sheep
 0
 250
-121
+0
 1
 1
 NIL
@@ -357,7 +407,7 @@ initial-number-wolves
 initial-number-wolves
 0
 250
-40
+57
 1
 1
 NIL
@@ -372,7 +422,7 @@ wolf-gain-from-sheep
 wolf-gain-from-sheep
 0.0
 20
-8
+11.5
 0.25
 1
 NIL
@@ -387,7 +437,7 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-4.5
+13.25
 0.25
 1
 %
@@ -402,7 +452,7 @@ grass-regrowth-time
 grass-regrowth-time
 0
 100
-74
+100
 1
 1
 NIL
@@ -577,7 +627,7 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-3
+2
 1.0
 1
 %
@@ -659,7 +709,7 @@ initial-number-grass
 initial-number-grass
 0
 2000
-1054
+875
 1
 1
 NIL
@@ -719,7 +769,7 @@ vacas-tmorte
 vacas-tmorte
 0
 100
-58
+100
 1
 1
 NIL
@@ -734,7 +784,7 @@ wolves-tmorte
 wolves-tmorte
 0
 100
-13
+35
 1
 1
 NIL
@@ -1183,7 +1233,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.1.0
+NetLogo 5.3.1
 @#$#@#$#@
 set grass? true
 setup
