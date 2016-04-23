@@ -15,7 +15,7 @@ to setup
   clear-all
   set vacas-death 0
   set sheep-death 0
-  set wolves-death 3.5
+  set wolves-death 0
   set lions-death 0
 
   ask patches [ set pcolor green ]
@@ -145,29 +145,26 @@ to vacas-move
       ]
 end
 
-to vacas-move2
-  ifelse any? vacas [
-      face min-one-of other vacas  [ distance myself ]
-      rt 180
-
-  ]
-  [
-    rt random 50                ;; movimenta os turtles
-    lt random 50
-  ]
-
-
-    forward 1
-
-    if pcolor = black [         ;; se o turtle 'pisa' na area preta
-      bk 1                      ;; da uma passo para traz
-      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
-      ]
-end
-
 to wolves-move
-  face min-one-of vacas  [ distance myself ]
+
+  let x min-one-of vacas in-radius 10 [distance myself]
+  ifelse (x != nobody) [
+     face min-one-of vacas  [ distance myself ]
     forward 1
+ ]
+  [
+    face min-one-of patches with [pcolor = green]  [ distance myself ]
+
+    if pcolor != green
+    [
+      set energy energy - 1
+      forward 1]
+    ;if random 100 < 25
+        ;[set energy energy - 1]
+  ]
+
+
+
     if pcolor = black [         ;; se o turtle 'pisa' na area preta
       bk 1                      ;; da uma passo para traz
       move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
@@ -407,7 +404,7 @@ initial-number-wolves
 initial-number-wolves
 0
 250
-57
+33
 1
 1
 NIL
@@ -422,7 +419,7 @@ wolf-gain-from-sheep
 wolf-gain-from-sheep
 0.0
 20
-11.5
+8.25
 0.25
 1
 NIL
@@ -437,7 +434,7 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-13.25
+3.75
 0.25
 1
 %
@@ -724,7 +721,7 @@ wolf-gain-from-cow
 wolf-gain-from-cow
 0
 20
-8
+20
 0.25
 1
 NIL
@@ -784,7 +781,7 @@ wolves-tmorte
 wolves-tmorte
 0
 100
-35
+100
 1
 1
 NIL
