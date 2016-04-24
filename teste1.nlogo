@@ -97,8 +97,8 @@ to go
     reproduce-vacas
   ]
   ask sheep [
-    move
-    sheep-lose-energy;;set energy energy - 1  ;; deduct energy for sheep
+    sheep-move
+    ;sheep-lose-energy;;set energy energy - 1  ;; deduct energy for sheep
     sheep-eat-grass
     do-sheep-death
     reproduce-sheep
@@ -112,7 +112,7 @@ to go
     reproduce-wolves
   ]
   ask lions [
-    move
+    lions-move
     lions-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
     l-catch-vacas
     l-catch-sheep
@@ -123,6 +123,60 @@ to go
   set grass count patches with [pcolor = green]
   tick
   display-labels
+end
+
+to lions-move
+
+  ifelse any? sheep in-radius 20[
+   face min-one-of sheep [ distance myself ]
+
+  ]
+  [
+    rt random 50
+     lt random 50
+  ]
+  forward 1
+
+
+
+    if pcolor = black [         ;; se o turtle 'pisa' na area preta
+      bk 1                      ;; da uma passo para traz
+      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
+      ]
+end
+
+to sheep-move
+
+  let x min-one-of lions in-radius 10 [distance myself]
+  ifelse (x != nobody) [
+     face min-one-of lions [ distance myself ]
+     rt 180
+     rt random 10
+     lt random 10
+
+ ]
+  [
+
+    let y min-one-of patches with [pcolor = green]  [ distance myself ]
+
+    ifelse (y != nobody)[
+      face min-one-of patches with [pcolor = green]  [ distance myself ]
+      ]
+    [
+      if random 100 < 75
+      [set energy energy - 1]
+      ]
+
+
+  ]
+  forward 1
+
+
+  if pcolor = black [         ;; se o turtle 'pisa' na area preta
+      bk 1                      ;; da uma passo para traz
+      move                      ;; e movimenta novamente, só funciona pq a direcao do movimento é aleatorio
+      ]
+
 end
 
 to vacas-move
@@ -147,6 +201,7 @@ end
 
 to wolves-move
 
+
   let x min-one-of vacas in-radius 10 [distance myself]
   ifelse (x != nobody) [
      face min-one-of vacas  [ distance myself ]
@@ -154,16 +209,14 @@ to wolves-move
     set energy energy - 1
  ]
   [
-    face min-one-of patches with [pcolor = green]  [ distance myself ]
-
-    ifelse pcolor != green
-    [
+    let y min-one-of sheep in-radius 2 [distance myself]
+    ifelse (y != nobody)[
+      face min-one-of sheep  [ distance myself ]
+      forward 1
       set energy energy - 1
-      forward 1]
-    ;if random 100 < 25
-        ;[set energy energy - 1]
+    ]
     [
-      if random 100 < 50
+      if random 100 < 75
       [set energy energy - 1]
     ]
   ]
@@ -364,7 +417,7 @@ initial-number-sheep
 initial-number-sheep
 0
 250
-0
+39
 1
 1
 NIL
@@ -379,7 +432,7 @@ sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-7
+15
 1.0
 1
 NIL
@@ -394,7 +447,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-3
+1
 1.0
 1
 %
@@ -409,7 +462,7 @@ initial-number-wolves
 initial-number-wolves
 0
 250
-33
+5
 1
 1
 NIL
@@ -439,7 +492,7 @@ wolf-reproduce
 wolf-reproduce
 0.0
 20.0
-3.75
+2
 0.25
 1
 %
@@ -599,7 +652,7 @@ initial-number-vacas
 initial-number-vacas
 0
 250
-189
+40
 1
 1
 NIL
@@ -614,7 +667,7 @@ vacas-gain-from-food
 vacas-gain-from-food
 0
 100
-6
+20
 1
 1
 NIL
@@ -629,7 +682,7 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-2
+6
 1.0
 1
 %
@@ -666,7 +719,7 @@ initial-number-lions
 initial-number-lions
 0
 300
-0
+6
 1
 1
 NIL
@@ -681,7 +734,7 @@ lion-gain-from-sheep
 lion-gain-from-sheep
 0
 100
-12
+49
 1
 1
 NIL
@@ -696,7 +749,7 @@ lion-reproduce
 lion-reproduce
 1.0
 20.0
-4
+1
 1.0
 1
 %
@@ -711,7 +764,7 @@ initial-number-grass
 initial-number-grass
 0
 2000
-875
+1484
 1
 1
 NIL
@@ -726,7 +779,7 @@ wolf-gain-from-cow
 wolf-gain-from-cow
 0
 20
-20
+12.75
 0.25
 1
 NIL
@@ -741,7 +794,7 @@ lion-gain-from-cow
 lion-gain-from-cow
 0
 100
-12
+30
 1
 1
 NIL
@@ -756,7 +809,7 @@ sheep-tmorte
 sheep-tmorte
 0
 100
-67
+100
 1
 1
 %
@@ -801,7 +854,7 @@ lions-tmorte
 lions-tmorte
 0
 100
-50
+100
 1
 1
 NIL
