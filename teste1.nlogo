@@ -105,7 +105,7 @@ to go
   ]
   ask wolves [
     wolves-move
-    wolves-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
+    ;wolves-lose-energy ;;set energy energy - 1  ;; wolves lose energy as they move
     catch-sheep
     catch-vacas
     do-wolves-death
@@ -151,16 +151,21 @@ to wolves-move
   ifelse (x != nobody) [
      face min-one-of vacas  [ distance myself ]
     forward 1
+    set energy energy - 1
  ]
   [
     face min-one-of patches with [pcolor = green]  [ distance myself ]
 
-    if pcolor != green
+    ifelse pcolor != green
     [
       set energy energy - 1
       forward 1]
     ;if random 100 < 25
         ;[set energy energy - 1]
+    [
+      if random 100 < 50
+      [set energy energy - 1]
+    ]
   ]
 
 
@@ -594,7 +599,7 @@ initial-number-vacas
 initial-number-vacas
 0
 250
-91
+189
 1
 1
 NIL
