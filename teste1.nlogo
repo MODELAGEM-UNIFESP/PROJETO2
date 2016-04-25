@@ -127,12 +127,12 @@ end
 
 to lions-move
 
-  ifelse any? sheep in-radius 20[
-   face min-one-of sheep [ distance myself ]
+  ifelse any? sheep in-radius 20[             ;; se houver uma ovelha em um raio de 20 em relação ao leão
+   face min-one-of sheep [ distance myself ]  ;; ele se rotaciona para a ovelha mais próxima
 
   ]
   [
-    rt random 50
+    rt random 50                              ;; caso contrário, apenas se rotaciona aleatoriamente
      lt random 50
   ]
   forward 1
@@ -147,24 +147,20 @@ end
 
 to sheep-move
 
-  let x min-one-of lions in-radius 10 [distance myself]
-  ifelse (x != nobody) [
-     face min-one-of lions [ distance myself ]
-     rt 180
-     rt random 10
+  let x min-one-of lions in-radius 10 [distance myself] ;; x é o leão mais perto em um raio de 10
+  ifelse (x != nobody) [                                ;; se x for alguém
+     face min-one-of lions [ distance myself ]          ;; ele se rotaciona para o leão mais próximo
+     rt 180                                             ;; se vira na direção oposta
+     rt random 10                                       ;; e um pouco para algum dos lados
      lt random 10
 
  ]
   [
 
-    let y min-one-of patches with [pcolor = green]  [ distance myself ]
+    let y min-one-of patches with [pcolor = green] in-radius 5  [ distance myself ] ;; se x for ninguém, y é o patch verde mais próximo
 
-    ifelse (y != nobody)[
-      face min-one-of patches with [pcolor = green]  [ distance myself ]
-      ]
-    [
-      if random 100 < 75
-      [set energy energy - 1]
+    if (y != nobody)[                                               ;; se y for alguém
+      face min-one-of patches with [pcolor = green]  [ distance myself ];; ele se rotaciona para o patch verde mais próximo
       ]
 
 
@@ -180,9 +176,9 @@ to sheep-move
 end
 
 to vacas-move
-  ifelse any? patches [
+  ifelse any? patches [                                                  ;; Se houver grama
 
-      face min-one-of patches with [pcolor = green]  [ distance myself ]
+      face min-one-of patches with [pcolor = green]  [ distance myself ] ;; a vaca se rotaciona para o patch verde mais próximo
 
   ]
   [
@@ -202,21 +198,21 @@ end
 to wolves-move
 
 
-  let x min-one-of vacas in-radius 10 [distance myself]
-  ifelse (x != nobody) [
-     face min-one-of vacas  [ distance myself ]
+  let x min-one-of vacas in-radius 10 [distance myself];; x é a vaca mais perto em um raio de 10
+  ifelse (x != nobody) [                               ;; se x for alguém
+     face min-one-of vacas  [ distance myself ]        ;; ele se rotaciona para a vaca mais próxima
     forward 1
     set energy energy - 1
  ]
   [
-    let y min-one-of sheep in-radius 2 [distance myself]
-    ifelse (y != nobody)[
-      face min-one-of sheep  [ distance myself ]
+    let y min-one-of sheep in-radius 2 [distance myself] ;; se x for ninguém, y é a ovelha mais próxima
+    ifelse (y != nobody)[                                ;; se y for alguém
+      face min-one-of sheep  [ distance myself ]         ;; ele se rotaciona para a ovelha mais próxima
       forward 1
       set energy energy - 1
     ]
     [
-      if random 100 < 75
+      if random 100 < 75                                 ;; se y for ninguém, o lobo tem uma chance de 3/4 de perder energia
       [set energy energy - 1]
     ]
   ]
@@ -382,10 +378,10 @@ end
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-1404
-10
-2244
-575
+714
+24
+1554
+589
 50
 32
 8.2245
@@ -432,7 +428,7 @@ sheep-gain-from-food
 sheep-gain-from-food
 0.0
 50.0
-15
+18
 1.0
 1
 NIL
