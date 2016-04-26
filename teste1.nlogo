@@ -127,9 +127,9 @@ end
 
 to lions-move
 
-  ifelse any? sheep in-radius 20[             ;; se houver uma ovelha em um raio de 20 em relação ao leão
-   face min-one-of sheep [ distance myself ]  ;; ele se rotaciona para a ovelha mais próxima
-
+  ifelse any? other lions in-radius 20[             ;; se houver uma ovelha em um raio de 20 em relação ao leão
+   face min-one-of other lions [ distance myself ]  ;; ele se rotaciona para a ovelha mais próxima
+   rt 180
   ]
   [
     rt random 50                              ;; caso contrário, apenas se rotaciona aleatoriamente
@@ -146,8 +146,12 @@ to lions-move
 end
 
 to sheep-move
+  
+  if (count other sheep in-radius 2 > 2)[
+   ask other sheep in-radius 2 [die]
+  ]
 
-  let x min-one-of lions in-radius 10 [distance myself] ;; x é o leão mais perto em um raio de 10
+  let x min-one-of lions in-radius 5 [distance myself] ;; x é o leão mais perto em um raio de 10
   ifelse (x != nobody) [                                ;; se x for alguém
      face min-one-of lions [ distance myself ]          ;; ele se rotaciona para o leão mais próximo
      rt 180                                             ;; se vira na direção oposta
@@ -176,6 +180,10 @@ to sheep-move
 end
 
 to vacas-move
+  
+  if (count other vacas in-radius 2 > 2)[
+   ask other vacas in-radius 2 [die]
+  ]
   ifelse any? patches [                                                  ;; Se houver grama
 
       face min-one-of patches with [pcolor = green]  [ distance myself ] ;; a vaca se rotaciona para o patch verde mais próximo
@@ -205,14 +213,14 @@ to wolves-move
     set energy energy - 1
  ]
   [
-    let y min-one-of sheep in-radius 2 [distance myself] ;; se x for ninguém, y é a ovelha mais próxima
+    let y min-one-of sheep in-radius 10 [distance myself] ;; se x for ninguém, y é a ovelha mais próxima
     ifelse (y != nobody)[                                ;; se y for alguém
       face min-one-of sheep  [ distance myself ]         ;; ele se rotaciona para a ovelha mais próxima
       forward 1
       set energy energy - 1
     ]
     [
-      if random 100 < 75                                 ;; se y for ninguém, o lobo tem uma chance de 3/4 de perder energia
+      if random 100 < 50                                 ;; se y for ninguém, o lobo tem uma chance de 3/4 de perder energia
       [set energy energy - 1]
     ]
   ]
@@ -443,7 +451,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-1
+2
 1.0
 1
 %
@@ -503,7 +511,7 @@ grass-regrowth-time
 grass-regrowth-time
 0
 100
-100
+48
 1
 1
 NIL
@@ -730,7 +738,7 @@ lion-gain-from-sheep
 lion-gain-from-sheep
 0
 100
-49
+100
 1
 1
 NIL
@@ -775,7 +783,7 @@ wolf-gain-from-cow
 wolf-gain-from-cow
 0
 20
-12.75
+15.25
 0.25
 1
 NIL
@@ -790,7 +798,7 @@ lion-gain-from-cow
 lion-gain-from-cow
 0
 100
-30
+100
 1
 1
 NIL
@@ -1284,7 +1292,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.3.1
+NetLogo 5.1.0
 @#$#@#$#@
 set grass? true
 setup
