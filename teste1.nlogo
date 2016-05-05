@@ -146,10 +146,10 @@ to lions-move
 end
 
 to sheep-move
-  
-  if (count other sheep in-radius 2 > 2)[
-   ask other sheep in-radius 2 [die]
-  ]
+
+  ;;if (count other sheep in-radius 2 > 2)[
+ ;;  ask other sheep in-radius 2 [die]
+ ;; ]
 
   let x min-one-of lions in-radius 5 [distance myself] ;; x é o leão mais perto em um raio de 10
   ifelse (x != nobody) [                                ;; se x for alguém
@@ -180,10 +180,10 @@ to sheep-move
 end
 
 to vacas-move
-  
-  if (count other vacas in-radius 2 > 2)[
-   ask other vacas in-radius 2 [die]
-  ]
+
+  ;;if (count other vacas in-radius 2 > 2)[
+   ;;ask other vacas in-radius 2 [die]
+ ;; ]
   ifelse any? patches [                                                  ;; Se houver grama
 
       face min-one-of patches with [pcolor = green]  [ distance myself ] ;; a vaca se rotaciona para o patch verde mais próximo
@@ -266,8 +266,6 @@ end
 to vacas-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
-    ;;if random-float 100 < 5
-      ;;[set pcolor brown]
       set pcolor brown
     set energy energy + vacas-gain-from-food  ;; sheep gain energy by eating
   ]
@@ -276,8 +274,7 @@ end
 to sheep-eat-grass  ;; sheep procedure
   ;; sheep eat grass, turn the patch brown
   if pcolor = green [
-    if random-float 100 < 50
-      [set pcolor brown]
+      set pcolor brown
     set energy energy + sheep-gain-from-food  ;; sheep gain energy by eating
   ]
 end
@@ -421,7 +418,7 @@ initial-number-sheep
 initial-number-sheep
 0
 250
-39
+74
 1
 1
 NIL
@@ -451,7 +448,7 @@ sheep-reproduce
 sheep-reproduce
 1.0
 20.0
-2
+1
 1.0
 1
 %
@@ -481,7 +478,7 @@ wolf-gain-from-sheep
 wolf-gain-from-sheep
 0.0
 20
-8.25
+10
 0.25
 1
 NIL
@@ -567,11 +564,11 @@ true
 true
 "" ""
 PENS
-"sheep" 1.0 0 -13345367 true "" "plot count sheep"
-"wolves" 1.0 0 -2674135 true "" "plot count wolves"
+"sheep" 1.0 0 -7500403 true "" "plot count sheep"
+"wolves" 1.0 0 -16777216 true "" "plot count wolves"
 "grass / 4" 1.0 0 -10899396 true "" "plot grass / 4"
-"vacas" 1.0 0 -7500403 true "" "plot count vacas"
-"lions" 1.0 0 -955883 true "" "plot count lions"
+"vacas" 1.0 0 -1184463 true "" "plot count vacas"
+"lions" 1.0 0 -13345367 true "" "plot count lions"
 
 MONITOR
 166
@@ -656,7 +653,7 @@ initial-number-vacas
 initial-number-vacas
 0
 250
-40
+53
 1
 1
 NIL
@@ -686,7 +683,7 @@ vacas-reproduce
 vacas-reproduce
 1.0
 20.0
-6
+4
 1.0
 1
 %
@@ -723,7 +720,7 @@ initial-number-lions
 initial-number-lions
 0
 300
-6
+25
 1
 1
 NIL
@@ -1292,7 +1289,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.1.0
+NetLogo 5.3.1
 @#$#@#$#@
 set grass? true
 setup
